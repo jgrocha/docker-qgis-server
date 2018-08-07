@@ -28,13 +28,13 @@ dockerBuild {
 
     stage('Build') {
         checkout scm
-        sh 'make -j3 clean build'
+        sh 'make clean build'
     }
     stage('Test') {
         checkout scm
         try {
             lock("acceptance-${env.NODE_NAME}") {
-                sh 'make -j3 acceptance-quick'  //quick because we don't want to rebuild the image
+                sh 'make acceptance-quick'  //quick because we don't want to rebuild the image
             }
         } finally {
             junit keepLongStdio: true, testResults: 'acceptance_tests/junitxml/*.xml'

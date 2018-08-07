@@ -1,4 +1,4 @@
-QGIS_BRANCH = master
+QGIS_BRANCH = server-wms-dimensions
 DOCKER_TAG ?= latest
 DOCKER_BASE = camptocamp/qgis-server
 ROOT = $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
@@ -27,11 +27,11 @@ DOCKER_TTY := $(shell [ -t 0 ] && echo -ti)
 all: build acceptance
 
 src:
-	git clone git://github.com/qgis/QGIS.git src
+	git clone git://github.com/rldhont/Quantum-GIS.git src
 
 .PHONY: update-src
 update-src: src
-	./checkout_release $(QGIS_BRANCH)
+	(cd src; git checkout $(QGIS_BRANCH))
 
 .PHONY: build-builder
 build-builder:
