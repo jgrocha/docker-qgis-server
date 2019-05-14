@@ -1,10 +1,10 @@
-FROM ubuntu:17.10
+FROM ubuntu:18.04
 MAINTAINER Camptocamp<info@camptocamp.com>
 
 RUN apt-get -y update && \
     LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install -y cmake flex bison libproj-dev \
         libgeos-dev libgdal-dev libqjson-dev python-qscintilla2 \
-        libexpat1-dev libfcgi-dev libgsl0-dev libpq-dev libqca2-dev libqca2-plugin-ossl \
+        libexpat1-dev libfcgi-dev libgsl0-dev libpq-dev libqca2-dev libqca2-plugins \
         libqscintilla2-dev libqt4-dev libqt4-opengl-dev libqt4-sql-sqlite \
         libqtwebkit-dev libqwt-dev libspatialindex-dev libspatialite-dev libsqlite3-dev \
         lighttpd locales pkg-config poppler-utils pyqt4-dev-tools python python-dev \
