@@ -25,6 +25,9 @@ fi
 trap 'echo "caught a SIGTERM"; kill -TERM $PID2; wait $PID2; kill -TERM $PID1; wait $PID1' TERM
 trap '' WINCH
 
+# the script has a delay of 10 seconds to make sure postgresql has already started
+/usr/bin/python3 -u /usr/local/bin/triggersuperupdate.py -c drote -w drote -d drote &
+
 rm -f $APACHE_RUN_DIR/apache2.pid
 
 exec apache2 -DFOREGROUND

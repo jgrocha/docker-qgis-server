@@ -121,16 +121,9 @@ ENV APACHE_CONFDIR=/etc/apache2 \
     APACHE_LOG_DIR=/var/log/apache2 \
     LANG=C.UTF-8
 
-RUN a2enmod fcgid headers status && \
+RUN a2enmod fcgid headers status alias cgid rewrite && \
     a2dismod -f auth_basic authn_file authn_core authz_user autoindex dir && \
-    rm /etc/apache2/mods-enabled/alias.conf && \
     mkdir -p ${APACHE_RUN_DIR} ${APACHE_LOCK_DIR} ${APACHE_LOG_DIR} && \
-    sed -ri ' \
-    s!^(\s*CustomLog)\s+\S+!\1 /proc/self/fd/1!g; \
-    s!^(\s*ErrorLog)\s+\S+!\1 /proc/self/fd/2!g; \
-    ' /etc/apache2/sites-enabled/000-default.conf /etc/apache2/apache2.conf && \
-    sed -ri 's!LogFormat "(.*)" combined!LogFormat "%{us}T %{X-Request-Id}i \1" combined!g' /etc/apache2/apache2.conf && \
-    echo 'ErrorLogFormat "%{X-Request-Id}i [%l] [pid %P] %M"' >> /etc/apache2/apache2.conf && \
     mkdir -p /var/www/.qgis3 && \
     mkdir -p /var/www/plugins && \
     chown www-data:root /var/www/.qgis3 && \
@@ -153,6 +146,7 @@ ENV QGIS_SERVER_LOG_LEVEL=0 \
     FCGID_IO_TIMEOUT=40
 
 COPY --from=builder-server /usr/local/bin /usr/local/bin/
+COPY --from=builder-server /usr/local/bin/qgis_mapserv.fcgi /usr/lib/cgi-bin/
 COPY --from=builder-server /usr/local/lib /usr/local/lib/
 COPY --from=builder-server /usr/local/share/qgis/python /usr/local/share/qgis/python/
 COPY runtime /
