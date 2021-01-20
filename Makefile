@@ -1,8 +1,8 @@
-QGIS_BRANCH = master
+# QGIS_BRANCH = master
+QGIS_BRANCH = release-3_16
 DOCKER_TAG ?= latest
-DOCKER_BASE = camptocamp/qgis-server
+DOCKER_BASE = geomaster/qgis-server
 ROOT = $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
-
 
 DOCKER_COMPOSE_TTY := $(shell [ ! -t 0 ] && echo -T)
 
@@ -12,7 +12,7 @@ all: build acceptance
 .PHONY: build
 build: build
 	docker build --target=runner-server --tag=$(DOCKER_BASE):$(DOCKER_TAG) --build-arg=QGIS_BRANCH=$(QGIS_BRANCH) .
-	docker build --target=runner-desktop --tag=$(DOCKER_BASE):$(DOCKER_TAG)-desktop --build-arg=QGIS_BRANCH=$(QGIS_BRANCH) .
+	# docker build --target=runner-desktop --tag=$(DOCKER_BASE):$(DOCKER_TAG)-desktop --build-arg=QGIS_BRANCH=$(QGIS_BRANCH) .
 
 .PHONY: build-acceptance-config
 build-acceptance-config:
