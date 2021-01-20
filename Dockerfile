@@ -1,5 +1,5 @@
-FROM osgeo/gdal:ubuntu-small-3.2.0 as builder
-LABEL maintainer="info@camptocamp.com"
+FROM osgeo/gdal:ubuntu-small-3.2.1 as builder
+LABEL maintainer="jgr@geomaster.pt"
 
 RUN apt update && \
     apt install --assume-yes --no-install-recommends apt-utils software-properties-common && \
@@ -79,8 +79,8 @@ RUN cmake .. \
 RUN ninja install
 RUN ccache --show-stats
 
-FROM osgeo/gdal:ubuntu-small-3.2.0 as runner
-LABEL maintainer="info@camptocamp.com"
+FROM osgeo/gdal:ubuntu-small-3.2.1 as runner
+LABEL maintainer="jgr@geomaster.pt"
 
 RUN apt update && \
     DEBIAN_FRONTEND=noninteractive apt install --assume-yes --no-install-recommends \
@@ -102,7 +102,9 @@ RUN python3 -m pip --no-cache-dir install future psycopg2 numpy nose2 pyyaml moc
 FROM runner as runner-server
 
 RUN apt update && \
-    DEBIAN_FRONTEND=noninteractive apt install --assume-yes --no-install-recommends libfcgi && \
+    DEBIAN_FRONTEND=noninteractive apt install --assume-yes --no-install-recommends vim libfcgi && \
+    DEBIAN_FRONTEND=noninteractive apt install --assume-yes python3-virtualenv python3-pil python3-yaml python3-lxml python3-shapely libapache2-mod-wsgi-py3 && \
+    DEBIAN_FRONTEND=noninteractive apt install --assume-yes postgresql-client cron && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -121,29 +123,30 @@ ENV APACHE_CONFDIR=/etc/apache2 \
     APACHE_LOG_DIR=/var/log/apache2 \
     LANG=C.UTF-8
 
-RUN a2enmod fcgid headers status alias cgid rewrite && \
+RUN a2enmod fcgid headers status alias cgid rewrite proxy proxy_http && \
     a2dismod -f auth_basic authn_file authn_core authz_user autoindex dir && \
     mkdir -p ${APACHE_RUN_DIR} ${APACHE_LOCK_DIR} ${APACHE_LOG_DIR} && \
+    sed -ri '/^#ServerRoot/ a ServerName localhost' /etc/apache2/apache2.conf && \
     mkdir -p /var/www/.qgis3 && \
     mkdir -p /var/www/plugins && \
     chown www-data:root /var/www/.qgis3 && \
     ln --symbolic /etc/qgisserver /project
 
 # A few tunable variables for QGIS
-ENV QGIS_SERVER_LOG_LEVEL=0 \
-    QGIS_SERVER_LOG_STDERR=1 \
-    PGSERVICEFILE=/etc/qgisserver/pg_service.conf \
-    QGIS_PROJECT_FILE=/etc/qgisserver/project.qgs \
-    QGIS_CUSTOM_CONFIG_PATH=/tmp \
-    MAX_CACHE_LAYERS="" \
-    QGIS_PLUGINPATH=/var/www/plugins \
-    QGIS_AUTH_DB_DIR_PATH=/etc/qgisserver/ \
-    FCGID_MAX_REQUESTS_PER_PROCESS=1000 \
-    FCGID_MIN_PROCESSES=1 \
-    FCGID_MAX_PROCESSES=5 \
-    FCGID_BUSY_TIMEOUT=300 \
-    FCGID_IDLE_TIMEOUT=300 \
-    FCGID_IO_TIMEOUT=40
+# ENV QGIS_SERVER_LOG_LEVEL=0 \
+#     QGIS_SERVER_LOG_STDERR=1 \
+#     PGSERVICEFILE=/etc/qgisserver/pg_service.conf \
+#     QGIS_PROJECT_FILE=/etc/qgisserver/project.qgs \
+#     QGIS_CUSTOM_CONFIG_PATH=/tmp \
+#     MAX_CACHE_LAYERS="" \
+#     QGIS_PLUGINPATH=/var/www/plugins \
+#     QGIS_AUTH_DB_DIR_PATH=/etc/qgisserver/ \
+#     FCGID_MAX_REQUESTS_PER_PROCESS=1000 \
+#     FCGID_MIN_PROCESSES=1 \
+#     FCGID_MAX_PROCESSES=5 \
+#     FCGID_BUSY_TIMEOUT=300 \
+#     FCGID_IDLE_TIMEOUT=300 \
+#     FCGID_IO_TIMEOUT=40
 
 COPY --from=builder-server /usr/local/bin /usr/local/bin/
 COPY --from=builder-server /usr/local/bin/qgis_mapserv.fcgi /usr/lib/cgi-bin/
@@ -153,12 +156,29 @@ COPY runtime /
 
 RUN adduser www-data root && \
     chmod -R g+rw ${APACHE_CONFDIR} ${APACHE_RUN_DIR} ${APACHE_LOCK_DIR} ${APACHE_LOG_DIR} /var/lib/apache2/fcgid /var/log /var/www/.qgis3 && \
-    chgrp -R root ${APACHE_LOG_DIR} /var/lib/apache2/fcgid
-
-RUN ldconfig
+    chgrp -R root ${APACHE_LOG_DIR} /var/lib/apache2/fcgid && \
+    chmod +x /usr/local/bin/rasters.sh && \
+    echo "0 0 * * * /usr/local/bin/rasters.sh" >> current_cron && \
+    echo "* * * * * date > /tmp/test_cron" >> current_cron && \
+    crontab current_cron && \
+    rm current_cron && \
+    update-rc.d cron defaults && \
+    ldconfig
 
 WORKDIR /etc/qgisserver
-EXPOSE 8080
+
+# RUN pip3 install MapProxy && \
+#     cp -r /tmp/qgismapproxy . && \
+#     a2enconf mapproxy
+
+RUN pip3 install MapProxy && \
+    pip3 install unidecode && \
+    cp -r /tmp/qgismapproxy . && \
+    chown -R www-data:www-data qgismapproxy && \
+    a2enconf mapproxy
+
+# EXPOSE 8080
+
 CMD ["/usr/local/bin/start-server"]
 
 FROM runner as runner-desktop

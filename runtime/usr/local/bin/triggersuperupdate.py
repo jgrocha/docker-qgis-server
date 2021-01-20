@@ -39,10 +39,11 @@ if client == 'drota':
     host = "http://gismar.eu"
     epsg = 'EPSG:5016'
 if client == 'drote':
-    mapproxyservice = "https://drote.geomaster.pt/mapproxy/service"
+    mapproxyservice = "http://localhost:8033/mapproxy/service"
     # cmdreloadmapproxy = "sudo /bin/systemctl restart apache2"
     cmdreloadmapproxy = "apache2 -k restart"
-    host = "http://localhost:8033"
+    # host = "http://localhost:8033"
+    host = "http://localhost"
     epsg = 'EPSG:5016'
 if client == 'dgt':
     mapproxyservice = "https://homologacao.geomaster.pt/mapproxy/service"
@@ -106,7 +107,7 @@ while True:
                     connlog.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
                     # conn.autocommit = True
                     cursor = connlog.cursor(cursor_factory=psycopg2.extras.DictCursor)
-                    qgisserver = "http://localhost:8033/postgresql/{}/{}/{}/cgi-bin/qgis_mapserv.fcgi".format( args.dbase, payload["schema"], payload["project"])
+                    qgisserver = "/postgresql/{}/{}/{}/cgi-bin/qgis_mapserv.fcgi".format( args.dbase, payload["schema"], payload["project"])
 
                     query = sql.SQL("INSERT INTO {schema}.{table}(subject,project,loglevel,detail) VALUES (%s, %s, %s, %s)").format( schema=sql.Identifier(schema), table=sql.Identifier(tbl_logger) )
                     cursor.execute( query, (parser.prog, project_name, 1, "A publicar o projeto {}...".format( project_name )))
@@ -119,19 +120,19 @@ while True:
                         query = sql.SQL("INSERT INTO {schema}.{table}(subject,project,loglevel,detail) VALUES (%s, %s, %s, %s)").format( schema=sql.Identifier(schema), table=sql.Identifier(tbl_logger) )
                         cursor.execute( query, (parser.prog, project_name, 0, cmdwebapp))
                         os.system(cmdwebapp)
-                    # # MapProxy needs to be updated: 
-                    # #   mapproxy.yaml
-                    # #   seed.yaml
-                    # if not args.skip:
-                    #     cmdmapproxy = "cd /home/qgis/qgismapproxy; /usr/bin/python3 /usr/local/bin/createflatyaml.py -h '{}' -u '{}' -o {} -b '{}' -s '{}' -p '{}' -g '{}' -c '{}' -w '{}' -m '{}'".format( host, qgisserver, payload["operation"], payload["database"], payload["schema"], payload["project"], epsg, client, webdb, mapproxyservice )
-                    # else:
-                    #     cmdmapproxy = "cd /home/qgis/qgismapproxy; /usr/bin/python3 /usr/local/bin/createflatyaml.py -h '{}' -u '{}' -o {} -b '{}' -s '{}' -p '{}' -g '{}' -c '{}' -m '{}'".format( host, qgisserver, payload["operation"], payload["database"], payload["schema"], payload["project"], epsg, client, mapproxyservice )
-                    # print(cmdmapproxy)
-                    # query = sql.SQL("INSERT INTO {schema}.{table}(subject,project,loglevel,detail) VALUES (%s, %s, %s, %s)").format( schema=sql.Identifier(schema), table=sql.Identifier(tbl_logger) )
-                    # cursor.execute( query, (parser.prog, project_name, 0, cmdmapproxy))
-                    # os.system(cmdmapproxy)
-                    # # restart MapProxy service
-                    # os.system(cmdreloadmapproxy)
+                    # MapProxy needs to be updated: 
+                    #   mapproxy.yaml
+                    #   seed.yaml
+                    if not args.skip:
+                        cmdmapproxy = "cd /etc/qgisserver/qgismapproxy; /usr/bin/python3 /usr/local/bin/createflatyaml.py -h '{}' -u '{}' -o {} -b '{}' -s '{}' -p '{}' -g '{}' -c '{}' -w '{}' -m '{}'".format( host, qgisserver, payload["operation"], payload["database"], payload["schema"], payload["project"], epsg, client, webdb, mapproxyservice )
+                    else:
+                        cmdmapproxy = "cd /etc/qgisserver/qgismapproxy; /usr/bin/python3 /usr/local/bin/createflatyaml.py -h '{}' -u '{}' -o {} -b '{}' -s '{}' -p '{}' -g '{}' -c '{}' -m '{}'".format( host, qgisserver, payload["operation"], payload["database"], payload["schema"], payload["project"], epsg, client, mapproxyservice )
+                    print(cmdmapproxy)
+                    query = sql.SQL("INSERT INTO {schema}.{table}(subject,project,loglevel,detail) VALUES (%s, %s, %s, %s)").format( schema=sql.Identifier(schema), table=sql.Identifier(tbl_logger) )
+                    cursor.execute( query, (parser.prog, project_name, 0, cmdmapproxy))
+                    os.system(cmdmapproxy)
+                    # restart MapProxy service
+                    os.system(cmdreloadmapproxy)
             except (ValueError, Exception, psycopg2.Error) as e:  # includes json.decoder.JSONDecodeError:
                 print(e)
                 query = sql.SQL("INSERT INTO {schema}.{table}(subject,loglevel,detail) VALUES (%s, %s, %s)").format( schema=sql.Identifier(schema), table=sql.Identifier(tbl_logger) )

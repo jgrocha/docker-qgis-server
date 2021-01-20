@@ -1,8 +1,8 @@
-QGIS_BRANCH = master
+# QGIS_BRANCH = master
+QGIS_BRANCH = release-3_16
 DOCKER_TAG ?= latest
 DOCKER_BASE = geomaster/qgis-server
 ROOT = $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
-
 
 DOCKER_COMPOSE_TTY := $(shell [ ! -t 0 ] && echo -T)
 
