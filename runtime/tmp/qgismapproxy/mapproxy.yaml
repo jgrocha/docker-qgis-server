@@ -2,8 +2,7 @@ services:
   demo:
   tms:
     use_grid_names: true
-    # origin for /tiles service
-    origin: 'nw'
+    origin: nw
   kml:
     use_grid_names: true
   wmts:
@@ -11,73 +10,360 @@ services:
     md:
       title: MapProxy WMS Proxy
       abstract: MapProxy caching QGIS Server
-    srs: [ EPSG:4326, EPSG:3763, EPSG:5016, EPSG:3857 ]
-
+    srs:
+    - EPSG:4326
+    - EPSG:3763
+    - EPSG:5016
+    - EPSG:3857
 layers:
-  - name: osmcontinente
-    title: OSM in ETRS98 TM06
-    sources: [osm_cache_continente]
-    legendurl: file://osm_logo.png
-
-  - name: osmram
-    title: OSM Madeira
-    sources: [osm_cache_ram]
-    legendurl: file://osm_logo.png
-
+- name: osmcontinente
+  title: OSM in ETRS98 TM06
+  sources:
+  - osm_cache_continente
+  legendurl: file://osm_logo.png
+- name: osmram
+  title: OSM Madeira
+  sources:
+  - osm_cache_ram
+  legendurl: file://osm_logo.png
+- name: drote_ortos_isobatimetricas
+  title: isobatimetricas
+  sources:
+  - drote_ortos_isobatimetricas_cache
+  md:
+    abstract: Layer from project:drote_ortos
+    identifier:
+    - name: isobatimetricas
+- name: drote_ortos_ao_3201015
+  title: Folha AO
+  sources:
+  - drote_ortos_ao_3201015_cache
+  md:
+    abstract: Layer from project:drote_ortos
+    identifier:
+    - name: ao_3201015
+- name: drote_ortos_an_3201015
+  title: Folha AN
+  sources:
+  - drote_ortos_an_3201015_cache
+  md:
+    abstract: Layer from project:drote_ortos
+    identifier:
+    - name: an_3201015
+- name: drote_ortos_am_320105
+  title: Folha AM
+  sources:
+  - drote_ortos_am_320105_cache
+  md:
+    abstract: Layer from project:drote_ortos
+    identifier:
+    - name: am_320105
+- name: drote_ortos_aj_3201015
+  title: Folha AJ
+  sources:
+  - drote_ortos_aj_3201015_cache
+  md:
+    abstract: Layer from project:drote_ortos
+    identifier:
+    - name: aj_3201015
+- name: drote_ortos_ai_3201015
+  title: Folha AI
+  sources:
+  - drote_ortos_ai_3201015_cache
+  md:
+    abstract: Layer from project:drote_ortos
+    identifier:
+    - name: ai_3201015
+- name: drote_ortos_ah_3201015
+  title: Folha AH
+  sources:
+  - drote_ortos_ah_3201015_cache
+  md:
+    abstract: Layer from project:drote_ortos
+    identifier:
+    - name: ah_3201015
+- name: drote_ortos_ag_3201015
+  title: Folha AG
+  sources:
+  - drote_ortos_ag_3201015_cache
+  md:
+    abstract: Layer from project:drote_ortos
+    identifier:
+    - name: ag_3201015
+- name: drote_ortos_ae_3201015
+  title: Folha AE
+  sources:
+  - drote_ortos_ae_3201015_cache
+  md:
+    abstract: Layer from project:drote_ortos
+    identifier:
+    - name: ae_3201015
+- name: drote_ortos_ad_3201015
+  title: Folha AD
+  sources:
+  - drote_ortos_ad_3201015_cache
+  md:
+    abstract: Layer from project:drote_ortos
+    identifier:
+    - name: ad_3201015
+- name: drote_ortos_orto_porto_santo_2018
+  title: Ortofotomapa Porto Santo 2018
+  sources:
+  - drote_ortos_orto_porto_santo_2018_cache
+  md:
+    abstract: Layer from project:drote_ortos
+    identifier:
+    - name: orto_porto_santo_2018
 caches:
   osm_cache_continente:
-    grids: ['EPSG:3763']
-    meta_size: [4, 4]
-    sources: [osm_cache_in]
+    grids:
+    - EPSG:3763
+    meta_size:
+    - 4
+    - 4
+    sources:
+    - osm_cache_in
   osm_cache_ram:
-    grids: ['EPSG:5016']
-    meta_size: [4, 4]
-    sources: [osm_cache_in]
+    grids:
+    - EPSG:5016
+    meta_size:
+    - 4
+    - 4
+    sources:
+    - osm_cache_in
   osm_cache_in:
-    grids: [osm_grid]
+    grids:
+    - osm_grid
     disable_storage: true
-    sources: [osm_source]
-
+    sources:
+    - osm_source
+  drote_ortos_isobatimetricas_cache:
+    meta_size:
+    - 4
+    - 4
+    meta_buffer: 20
+    use_direct_from_level: 14
+    concurrent_tile_creators: 2
+    link_single_color_images: true
+    grids:
+    - EPSG:5016
+    sources:
+    - drote_ortos:isobatimetricas
+  drote_ortos_ao_3201015_cache:
+    meta_size:
+    - 4
+    - 4
+    meta_buffer: 20
+    use_direct_from_level: 14
+    concurrent_tile_creators: 2
+    link_single_color_images: true
+    grids:
+    - EPSG:5016
+    sources:
+    - drote_ortos:ao_3201015
+  drote_ortos_an_3201015_cache:
+    meta_size:
+    - 4
+    - 4
+    meta_buffer: 20
+    use_direct_from_level: 14
+    concurrent_tile_creators: 2
+    link_single_color_images: true
+    grids:
+    - EPSG:5016
+    sources:
+    - drote_ortos:an_3201015
+  drote_ortos_am_320105_cache:
+    meta_size:
+    - 4
+    - 4
+    meta_buffer: 20
+    use_direct_from_level: 14
+    concurrent_tile_creators: 2
+    link_single_color_images: true
+    grids:
+    - EPSG:5016
+    sources:
+    - drote_ortos:am_320105
+  drote_ortos_aj_3201015_cache:
+    meta_size:
+    - 4
+    - 4
+    meta_buffer: 20
+    use_direct_from_level: 14
+    concurrent_tile_creators: 2
+    link_single_color_images: true
+    grids:
+    - EPSG:5016
+    sources:
+    - drote_ortos:aj_3201015
+  drote_ortos_ai_3201015_cache:
+    meta_size:
+    - 4
+    - 4
+    meta_buffer: 20
+    use_direct_from_level: 14
+    concurrent_tile_creators: 2
+    link_single_color_images: true
+    grids:
+    - EPSG:5016
+    sources:
+    - drote_ortos:ai_3201015
+  drote_ortos_ah_3201015_cache:
+    meta_size:
+    - 4
+    - 4
+    meta_buffer: 20
+    use_direct_from_level: 14
+    concurrent_tile_creators: 2
+    link_single_color_images: true
+    grids:
+    - EPSG:5016
+    sources:
+    - drote_ortos:ah_3201015
+  drote_ortos_ag_3201015_cache:
+    meta_size:
+    - 4
+    - 4
+    meta_buffer: 20
+    use_direct_from_level: 14
+    concurrent_tile_creators: 2
+    link_single_color_images: true
+    grids:
+    - EPSG:5016
+    sources:
+    - drote_ortos:ag_3201015
+  drote_ortos_ae_3201015_cache:
+    meta_size:
+    - 4
+    - 4
+    meta_buffer: 20
+    use_direct_from_level: 14
+    concurrent_tile_creators: 2
+    link_single_color_images: true
+    grids:
+    - EPSG:5016
+    sources:
+    - drote_ortos:ae_3201015
+  drote_ortos_ad_3201015_cache:
+    meta_size:
+    - 4
+    - 4
+    meta_buffer: 20
+    use_direct_from_level: 14
+    concurrent_tile_creators: 2
+    link_single_color_images: true
+    grids:
+    - EPSG:5016
+    sources:
+    - drote_ortos:ad_3201015
+  drote_ortos_orto_porto_santo_2018_cache:
+    meta_size:
+    - 4
+    - 4
+    meta_buffer: 20
+    use_direct_from_level: 14
+    concurrent_tile_creators: 2
+    link_single_color_images: true
+    grids:
+    - EPSG:5016
+    sources:
+    - drote_ortos:orto_porto_santo_2018
 sources:
   osm_source:
     type: tile
     grid: osm_grid
     url: http://a.tile.openstreetmap.org/%(z)s/%(x)s/%(y)s.png
-
+  drote_ortos:
+    type: wms
+    wms_opts:
+      featureinfo: true
+      legendgraphic: true
+    req:
+      url: http://localhost/postgresql/drote/public/ortos/cgi-bin/qgis_mapserv.fcgi
+      transparent: true
 grids:
   webmercator:
     base: GLOBAL_WEBMERCATOR
-
   osm_grid:
     base: GLOBAL_MERCATOR
-    srs: 'EPSG:3857'
+    srs: EPSG:3857
     origin: nw
-
   EPSG:3763:
-    srs: 'EPSG:3763'
-    bbox_srs: 'EPSG:3763'
-    bbox: [-127200, -301800, 180000, 278552]
+    srs: EPSG:3763
+    bbox_srs: EPSG:3763
+    bbox:
+    - -127200
+    - -301800
+    - 180000
+    - 278552
     origin: nw
-    res : [1200, 600, 300, 150, 75, 37.5, 18.75, 9.375, 4.6875, 2.34375, 1.171875, 0.5859375, 0.29296875, 0.146484375, 0.0732421875]
-
-  # Madeira
+    res:
+    - 1200
+    - 600
+    - 300
+    - 150
+    - 75
+    - 37.5
+    - 18.75
+    - 9.375
+    - 4.6875
+    - 2.34375
+    - 1.171875
+    - 0.5859375
+    - 0.29296875
+    - 0.146484375
+    - 0.0732421875
   EPSG:5016:Gismar:
-    srs: 'EPSG:5016'
-    bbox_srs: 'EPSG:5016'
-    bbox: [270000, 3600000, 350000, 3650000]
+    srs: EPSG:5016
+    bbox_srs: EPSG:5016
+    bbox:
+    - 270000
+    - 3600000
+    - 350000
+    - 3650000
     origin: nw
-    res : [312.5, 156.25, 78.125, 39.0625, 19.53125, 9.765625, 4.8828125, 2.44140625, 1.220703125, 0.6103515625, 0.30517578125, 0.152587890625, 0.0762939453125, 0.03814697265625, 0.019073486328125]
-
-  # Madeira, Porto Santo e Desertas
+    res:
+    - 312.5
+    - 156.25
+    - 78.125
+    - 39.0625
+    - 19.53125
+    - 9.765625
+    - 4.8828125
+    - 2.44140625
+    - 1.220703125
+    - 0.6103515625
+    - 0.30517578125
+    - 0.152587890625
+    - 0.0762939453125
+    - 0.03814697265625
+    - 0.019073486328125
   EPSG:5016:
-    srs: 'EPSG:5016'
-    bbox_srs: 'EPSG:5016'
-    bbox: [270000, 3570000, 398000, 3698000]
+    srs: EPSG:5016
+    bbox_srs: EPSG:5016
+    bbox:
+    - 270000
+    - 3570000
+    - 398000
+    - 3698000
     origin: nw
-    res: [ 500, 250, 125, 62.5, 31.25, 15.625, 7.8125, 3.90625, 1.953125, 0.9765625, 0.48828125, 0.244140625, 0.1220703125, 0.06103515625, 0.030517578125 ]
-
-# To prevent MapProxy to send headers
-# CORS Headers are managed by Apache
+    res:
+    - 500
+    - 250
+    - 125
+    - 62.5
+    - 31.25
+    - 15.625
+    - 7.8125
+    - 3.90625
+    - 1.953125
+    - 0.9765625
+    - 0.48828125
+    - 0.244140625
+    - 0.1220703125
+    - 0.06103515625
+    - 0.030517578125
 globals:
   http:
     access_control_allow_origin: ''

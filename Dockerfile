@@ -105,6 +105,7 @@ RUN apt update && \
     DEBIAN_FRONTEND=noninteractive apt install --assume-yes --no-install-recommends vim libfcgi && \
     DEBIAN_FRONTEND=noninteractive apt install --assume-yes python3-virtualenv python3-pil python3-yaml python3-lxml python3-shapely libapache2-mod-wsgi-py3 && \
     DEBIAN_FRONTEND=noninteractive apt install --assume-yes postgresql-client cron && \
+    DEBIAN_FRONTEND=noninteractive apt install --assume-yes --no-install-recommends postgis && \
     apt clean && \
     rm -rf /var/lib/apt/lists/*
 
